@@ -22,6 +22,11 @@ def verify_brute(boxes):
     raise NotImplementedError("verify_brute 尚未实现")
 
 
+def load_boxes(path):
+    """读入与落盘辅助"""
+    raise NotImplementedError("load_boxes 尚未实现")
+
+
 class sweep_prune:
     """class"""
 
