@@ -12,16 +12,6 @@ class AABB:
     hi: tuple
 
 
-def AABB:
-    """class"""
-    raise NotImplementedError("AABB 尚未实现")
-
-
-def sweep_prune:
-    """class"""
-    raise NotImplementedError("sweep_prune 尚未实现")
-
-
 def pairs(self):
     """生成候选对"""
     raise NotImplementedError("pairs 尚未实现")
@@ -32,7 +22,9 @@ def verify_brute(boxes):
     raise NotImplementedError("verify_brute 尚未实现")
 
 
-def load_boxes(path):
-    """读入与落盘辅助"""
-    raise NotImplementedError("load_boxes 尚未实现")
+class sweep_prune:
+    """class"""
+
+    def __init__(self, *args, **kwargs):
+        raise NotImplementedError("sweep_prune 尚未实现")
 
