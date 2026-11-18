@@ -12,14 +12,12 @@ class AABB:
     hi: tuple
 
 
-def AABB:
-    """class"""
-    raise NotImplementedError("AABB 尚未实现")
 
 
-def sweep_prune:
-    """class"""
-    raise NotImplementedError("sweep_prune 尚未实现")
+class sweep_prune:
+
+    def __init__(self, *args, **kwargs):
+        raise NotImplementedError("sweep_prune 尚未实现")
 
 
 def pairs(self):

@@ -21,6 +21,9 @@ def test_single_box():
 
 
 # ===== v2 契约测试：初始全部失败，实现后必须通过 =====
+import broadphase  # noqa: E402
+AABB = broadphase.AABB
+
 
 
 def _boxes(n, gap=1.0, span=1.5):
