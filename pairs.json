@@ -1,16 +1,14 @@
 {
+  "boxes": 3,
   "pairs": [
     [
       0,
       1
     ]
   ],
-  "stats": {
-    "boxes": 3,
-    "candidate_pairs": 1,
-    "brute_pairs": 1,
-    "scans": 3,
-    "max_overlap_pairs": 1,
-    "match_brute": true
-  }
+  "suspected": 1,
+  "confirmed": 1,
+  "missed": 0,
+  "scans": 3,
+  "deterministic": true
 }
