@@ -1,1 +1,1 @@
-from .core import *  # noqa: F401,F403
+"""宽相碰撞检测"""
