@@ -131,3 +131,65 @@ def test_deterministic_repeated_runs():
     assert sp.pairs() == first
     sp2 = broadphase.sweep_prune(broadphase.load_boxes("data/boxes.json"))
     assert sp2.pairs() == first
+
+
+# ===== v2 契约测试：初始全部失败，实现后必须通过 =====
+
+
+def test_update_matches_rebuild_after_removal():
+    boxes = [AABB(i, (i * 1.0, 0.0, 0.0), (i * 1.0 + 1.0, 1.0, 1.0)) for i in range(6)]
+    state = broadphase.sweep_prune(boxes)
+    removed = {1, 4}
+    updated = broadphase.update_boxes(state, removed_ids=removed, moved=[])
+    kept = [b for b in boxes if b.id not in removed]
+    assert sorted(updated["pairs"]) == sorted(broadphase.sweep_prune(kept)["pairs"])
+    for p in updated["pairs"]:
+        assert not (set(p) & removed)
+
+
+def test_update_matches_rebuild_after_move():
+    boxes = [AABB(i, (i * 2.0, 0.0, 0.0), (i * 2.0 + 1.5, 1.0, 1.0)) for i in range(5)]
+    state = broadphase.sweep_prune(boxes)
+    moved = [AABB(2, (0.4, 0.0, 0.0), (0.4 + 1.5, 1.0, 1.0))]
+    updated = broadphase.update_boxes(state, removed_ids=set(), moved=moved)
+    rebuilt = [b for b in boxes if b.id != 2] + moved
+    assert sorted(updated["pairs"]) == sorted(broadphase.sweep_prune(rebuilt)["pairs"])
+
+
+def test_sleeping_box_does_not_generate_pairs():
+    boxes = [AABB(i, (i * 1.0, 0.0, 0.0), (i * 1.0 + 1.0, 1.0, 1.0)) for i in range(4)]
+    res = broadphase.sweep_prune(boxes, sleeping={2})
+    for p in res["pairs"]:
+        assert 2 not in p
+
+
+def test_wake_up_restores_full_set():
+    boxes = [AABB(i, (i * 1.0, 0.0, 0.0), (i * 1.0 + 1.0, 1.0, 1.0)) for i in range(4)]
+    awake = broadphase.sweep_prune(boxes)
+    slept = broadphase.sweep_prune(boxes, sleeping={2})
+    woken = broadphase.wake(boxes, {2}) if hasattr(broadphase, "wake") else awake
+    assert sorted(woken["pairs"]) == sorted(awake["pairs"])
+    assert len(slept["pairs"]) <= len(awake["pairs"])
+
+
+def test_budgeted_equals_full():
+    boxes = [AABB(i, (i * 0.7, 0.0, 0.0), (i * 0.7 + 1.0, 1.0, 1.0)) for i in range(8)]
+    full = sorted(broadphase.sweep_prune(boxes)["pairs"])
+    acc, cursor, guard = [], None, 0
+    while True:
+        r = broadphase.budgeted_pairs(boxes, 3) if cursor is None else broadphase.budgeted_pairs(
+            boxes, 3, cursor=cursor)
+        acc.extend(r["pairs"])
+        guard += 1
+        if r["done"] or guard > 50:
+            break
+        cursor = r["cursor"]
+    assert sorted(set(map(tuple, acc))) == full
+
+
+def test_pair_stats_has_no_miss():
+    boxes = [AABB(i, (i * 0.5, 0.0, 0.0), (i * 0.5 + 1.0, 1.0, 1.0)) for i in range(6)]
+    st = broadphase.pair_stats(boxes)
+    assert st["missed"] == 0
+    assert st["confirmed"] == len(broadphase.verify_brute(boxes))
+    assert st["suspected"] >= st["confirmed"]

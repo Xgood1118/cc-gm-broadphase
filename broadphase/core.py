@@ -168,3 +168,24 @@ def max_overlap_depth(boxes):
         if depth > best:
             best = depth
     return best
+
+
+def update_boxes(state, removed_ids=None, moved=None):
+    """动态更新：removed_ids 为删除编号集合，moved 为移动后的盒子列表。
+
+    返回更新后的状态对象；候选必须与删除后全量重建一致。
+    """
+    raise NotImplementedError("update_boxes 尚未实现")
+
+
+def budgeted_pairs(boxes, budget):
+    """按扫描预算分帧生成候选。
+
+    返回 dict：pairs 为本次已确认候选，done 表示是否完成，cursor 供下次续算。
+    """
+    raise NotImplementedError("budgeted_pairs 尚未实现")
+
+
+def pair_stats(boxes):
+    """返回 dict：suspected 疑似对数、confirmed 确认对数、missed 漏报数。"""
+    raise NotImplementedError("pair_stats 尚未实现")
